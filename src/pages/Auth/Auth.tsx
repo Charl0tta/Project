@@ -6,6 +6,7 @@ export const Auth = () => {
 
     const [login, setLogin] = useState("")
     const [password, setPassword] = useState("")
+    const url = "http://127.0.0.1:5000"
 
     return (
     <div className="auth-page">
@@ -16,6 +17,13 @@ export const Auth = () => {
 
             <button onClick={() => {
                 alert(`${login}: ${password}`)
+                fetch(url, {
+                    headers: {
+                      'Content-Type': 'application/json'
+                  },
+                    method: 'POST',
+                    body: login
+                  })
             }}>Отправить</button>
             
         </div>
