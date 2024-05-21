@@ -30,12 +30,19 @@ import SaveIcon from '@mui/icons-material/Save';
 import SendIcon from '@mui/icons-material/Send';
 import DownloadIcon from '@mui/icons-material/Download';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
+import Snackbar from '@mui/material/Snackbar';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
+import DialogTitle from '@mui/material/DialogTitle';
 import { styled } from '@mui/material/styles';
 import  { TimetableCreateBar } from "../../pages/TimetableCreateBar/TimetableCreateBar"
+import { with_retry } from "../../pages/TimetableCreateBar/TimetableCreateBar"
 
 
 const drawerWidth = 240;
-const url = "http://127.0.0.1:5000/send"
+const url = "http://127.0.0.1:5000/generate"
 
 
 const VisuallyHiddenInput = styled('input')({
@@ -58,6 +65,10 @@ export const TimetableGeneration = () => {
     function handleClick() {
         setLoading(true);
     }
+    const [open, setOpen] = React.useState(false);
+    const handleClose = () => {
+        setOpen(false);
+      };
     return (
         <div className="grade-page">
             <CssBaseline />
@@ -83,7 +94,44 @@ export const TimetableGeneration = () => {
                 <Toolbar />
                 <div className="grade-page">
                     <p>Тут будут какие-то параметры по генерации расписания</p>
-                    <button>Создать расписание</button>
+                    <Button endIcon={<SendIcon />} onClick={async () => 
+                    with_retry(async () => {
+                    const response = await fetch(url, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            username: login,
+                        })
+                    })
+                    const json = await response.json()
+                    if (json["success"] == "true") {
+                        setOpen(true)
+                    }
+                    else throw new Error()
+                    }
+                )
+                }>Отправить</Button>
+                <Dialog
+        open={open}
+        onClose={handleClose}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogTitle id="alert-dialog-title">
+          {"Успех!"}
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText id="alert-dialog-description">
+            Расписание создано успешно! Переходите к следующему шагу, чтобы скачать его!
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleClose}>Закрыть</Button>
+          <Button component={Link} to={"/timetable-download"}>Далее</Button>
+        </DialogActions>
+      </Dialog>
                 </div>
             </Box>
         </div>

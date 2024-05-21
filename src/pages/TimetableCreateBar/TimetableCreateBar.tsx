@@ -8,6 +8,25 @@ import Box from '@mui/material/Box';
 import DownloadIcon from '@mui/icons-material/Download';
 import { Link } from "react-router-dom"
 
+export async function with_retry(callback) {
+        try {
+            callback()
+        }
+        catch {
+        const response = await fetch("http://127.0.0.1:5000/token/refresh", {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'Authorization': "Bearer " + localStorage.getItem("refresh_token")
+                            },
+                        })
+        const json = await response.json()
+        localStorage.setItem("access_token", json["access_token"])
+        localStorage.setItem("refresh_token", json["refresh_token"])
+        callback()
+      }
+    
+}
 
 export const TimetableCreateBar = () => {
     return (<Box sx={{ overflow: 'auto' }}>

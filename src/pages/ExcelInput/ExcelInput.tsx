@@ -40,9 +40,7 @@ const drawerWidth = 240;
 const url = "http://127.0.0.1:5000/send";
 
 function FileUploadSingle() {
-
     const [file, setFile] = useState()
-
     function handleChange(event) {
         setFile(event.target.files[0])
     }
@@ -52,6 +50,7 @@ function FileUploadSingle() {
         const username = "lyceum1524"
         const url = 'http://127.0.0.1:5000/read-file';
         const formData = new FormData();
+        
         formData.append('file', file);
         formData.append('fileName', file.name);
         formData.append('username', username);
@@ -78,7 +77,7 @@ function FileUploadSingle() {
                     onChange={handleChange}
                 >
                     Upload file
-                    <VisuallyHiddenInput type="file" />
+                    <VisuallyHiddenInput type="file" accept='.xls,.xlsx'/>
                 </Button>
                 <Button variant="contained" endIcon={<SendIcon />} type="submit">
                     Send
@@ -113,7 +112,7 @@ export const ExcelInput = () => {
             <AppBar position="fixed" sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}>
                 <Toolbar>
                     <Typography variant="h6" noWrap component="div">
-                        Clipped drawer
+                    Timetable Create Service
                     </Typography>
                 </Toolbar>
             </AppBar>

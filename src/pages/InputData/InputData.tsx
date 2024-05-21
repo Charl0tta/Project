@@ -32,7 +32,12 @@ import DownloadIcon from '@mui/icons-material/Download';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import { styled } from '@mui/material/styles';
 import  { TimetableCreateBar } from "../../pages/TimetableCreateBar/TimetableCreateBar"
-
+import { with_retry } from "../../pages/TimetableCreateBar/TimetableCreateBar"
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
+import DialogTitle from '@mui/material/DialogTitle';
 
 
 const drawerWidth = 240;
@@ -148,19 +153,23 @@ export const InputData = () => {
     const [subjects, setSubjects] = useState<string[]>([])
     const [cabinets, setCabinets] = useState<string[]>([])
     const [teachers, setTeachers] = useState<string[]>([])
-    const login = 'lyceum1524'
+    const login = localStorage.getItem("username")
     const url_to_file = '123'
     const [loading, setLoading] = React.useState(true);
     function handleClick() {
         setLoading(true);
     }
+    const [open, setOpen] = React.useState(false);
+    const handleClose = () => {
+        setOpen(false);
+      };
     return (
         <div className="grade-page">
             <CssBaseline />
             <AppBar position="fixed" sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}>
                 <Toolbar>
                     <Typography variant="h6" noWrap component="div">
-                        Clipped drawer
+                    Timetable Create Service
                     </Typography>
                 </Toolbar>
             </AppBar>
@@ -241,11 +250,13 @@ export const InputData = () => {
                 </ButtonGroup>
             </div>
             <div className="grade-page">
-                <Button endIcon={<SendIcon />} onClick={() => {
-                    fetch(url, {
+                <Button endIcon={<SendIcon />} onClick={async () =>
+                    with_retry(async () => {
+                        const response = await fetch(url, {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
+                            'Authorization': "Bearer " + localStorage.getItem("access_token")
                         },
                         body: JSON.stringify({
                             username: login,
@@ -255,7 +266,38 @@ export const InputData = () => {
                             teachers: teachers
                         })
                     })
-                }}>Отправить</Button>
+                    console.log(localStorage.getItem("refresh_token"))
+                    console.log(localStorage.getItem("access_token"))
+                    if (response.status == 200) {
+                    const json = await response.json()
+                    if (json["successfully"] == "true") {
+                        setOpen(true)
+                    }
+                    else throw new Error()
+                    }
+                    else throw new Error()
+                    }
+                )
+                }>Отправить</Button>
+                <Dialog
+        open={open}
+        onClose={handleClose}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogTitle id="alert-dialog-title">
+          {"Успех!"}
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText id="alert-dialog-description">
+            Данные сохранены! Переходите к следующему шагу!
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleClose}>Закрыть</Button>
+          <Button component={Link} to={"/excel-input"}>Далее</Button>
+        </DialogActions>
+      </Dialog>
             </div>
         </Box>
         </div>

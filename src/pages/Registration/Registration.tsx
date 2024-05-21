@@ -1,7 +1,7 @@
 import { useState } from "react"
 import { Input } from "../../ui/Input/Input"
 import { Navbar } from "../../components/Navbar/Navbar";
-import "./Auth.css"
+import "./Registration.css"
 import * as React from 'react';
 import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
@@ -10,15 +10,16 @@ import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
 import { styled } from '@mui/material/styles';
 
-export const Auth = () => {
+export const Registration = () => {
     const [postId, setPostId] = useState(null);
     const [login, setLogin] = useState("")
     const [password, setPassword] = useState("")
-    const url = "http://127.0.0.1:5000/login"
+    const [password2, setPassword2] = useState("")
+    const url = "http://127.0.0.1:5000/registration"
 
     return (
         
-        <Box component="form"
+        <Box component="form" 
         sx = {{position: "absolute",
         top: "50%",
         left: "50%",
@@ -33,6 +34,9 @@ export const Auth = () => {
             }} />
             <TextField id="standard-basic" label="Пароль" type="password" variant="standard" value={password} onChange={(e) => {
                 setPassword(e.target.value)
+            }}/>
+            <TextField id="standard-basic" label="Пароль" type="password" variant="standard" value={password2} onChange={(e) => {
+                setPassword2(e.target.value)
             }}/>
             <Button variant="contained" onClick={async () => {
                     // POST request using fetch with async/await
@@ -50,11 +54,7 @@ export const Auth = () => {
                     localStorage.setItem("username", login)
                     localStorage.setItem("access_token", json["access_token"])
                     localStorage.setItem("refresh_token", json["refresh_token"])
-                    if (json['successfully'] == 'true') {
-                        window.location.href = "../lk";
-                    }
-                }
-                }>Войти</Button>
+                }}>Регистрация</Button>
                 </Stack>
         </Box>
     );

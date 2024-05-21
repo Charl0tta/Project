@@ -35,7 +35,7 @@ import  { TimetableCreateBar } from "../../pages/TimetableCreateBar/TimetableCre
 
 
 const drawerWidth = 240;
-const url = "http://127.0.0.1:5000/send"
+const url = "http://127.0.0.1:5000/download"
 
 
 const VisuallyHiddenInput = styled('input')({
@@ -64,7 +64,7 @@ export const DownloadTimetable = () => {
             <AppBar position="fixed" sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}>
                 <Toolbar>
                     <Typography variant="h6" noWrap component="div">
-                        Clipped drawer
+                    Timetable Create Service
                     </Typography>
                 </Toolbar>
             </AppBar>
@@ -83,7 +83,36 @@ export const DownloadTimetable = () => {
                 <Toolbar />
                 <div className="grade-page">
                     <p>Тут будет какая-то предварительная информация</p>
-                    <button>Скачать расписание</button>
+                    <Button endIcon={<SendIcon />} onClick={() => {
+                    fetch(url, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            username: login
+                        })
+                    })
+                        .then((response) => response.blob())
+                        .then((blob) => {
+                            //Create blob link to download
+                            const url = window.URL.createObjectURL(
+                                new Blob([blob]),
+                            );
+                            const link = document.createElement('a');
+                            link.href = url;
+                            link.setAttribute(
+                                'download',
+                                `FileName.xlsx`,
+                            );
+                            // Append to html link element page
+                            document.body.appendChild(link);
+                            // Start download
+                            link.click();
+                            // Clean up and remove the link
+                            //link.parentNode.removeChild(link);
+                        });
+                }}>Скачать</Button>
                 </div>
             </Box>
         </div>
